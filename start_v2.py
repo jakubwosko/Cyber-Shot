@@ -1,12 +1,12 @@
 #################################################################################################
 # Cyber Shot by Jakub Wosko
-# version 1.0
+# version 1.05
 # 3/2/2015
 #
 # comment: just wanted to learn Python. it turned out to be one of the most funny things :)
 #################################################################################################
 
-import pygame, sys, time
+import pygame, sys
 from pygame.locals import *
 from copy import deepcopy
 
@@ -22,29 +22,20 @@ SNOW2 = (139,137,137)
 
 screen.fill(WHITE)
 
-def print_score(score):
-	pygame.draw.rect(screen, WHITE, (10,8,70,15))
+def print_score_hiscore_life(score,hiscore,life):
+	pygame.draw.rect(screen, WHITE, (10,8,300,15))
 	font = pygame.font.SysFont("monospace", 13)
 	scoretext=font.render("score:"+str(score), 1,(0,0,0))
 	screen.blit(scoretext, (10, 8))
-
-def print_hiscore(score):
-	pygame.draw.rect(screen, WHITE, (185,8,90,15))
-	font = pygame.font.SysFont("monospace", 13)
-	scoretext=font.render("hiscore:"+str(score), 1,(0,0,0))
+	scoretext=font.render("hiscore:"+str(hiscore), 1,(0,0,0))
 	screen.blit(scoretext, (185, 8))
-
-def print_life(gameover):
-	pygame.draw.rect(screen, WHITE, (100,8,70,15))
-	font = pygame.font.SysFont("monospace", 13)
-	textg=font.render("life:"+str(gameover), 1,(0,0,0))
+	textg=font.render("life:"+str(life), 1,(0,0,0))
 	screen.blit(textg, (100, 8))
 	
 def print_gameover():
 	font = pygame.font.SysFont("monospace", 50)
 	textgm=font.render("GAME OVER", 1,(0,0,0))
 	screen.blit(textgm, (90, 200))
-	
 	font = pygame.font.SysFont("monospace", 20)
 	textgm=font.render("press any key", 1,(0,0,0))
 	screen.blit(textgm, (135, 300))
@@ -53,7 +44,6 @@ def print_startgame():
 	font = pygame.font.SysFont("monospace", 50)
 	textgm=font.render("CYBER SHOT", 1,(0,0,0))
 	screen.blit(textgm, (70, 200))
-	
 	font = pygame.font.SysFont("monospace", 15)
 	textgm=font.render("press any key to start", 1,(0,0,0))
 	screen.blit(textgm, (120, 300))
@@ -64,12 +54,10 @@ def main_game(hiscore_in):
 	x,px,y,py=20,20,130,130
 	orient_x,orient_y=1,1
 	bar,pbar=200,200
-	SPEED=0.001
 	life=3
-	GAMEOVER=False
-	MYSCORE=0
-	print_hiscore(hiscore_in)
-	
+	gameover=False
+	myscore=0
+		
 	#brics definition matrx 
 	
 	bricks2 = [[1,1,30,2,51,30,1,101,30,2,151,30,1,201,30,2,251,30,1,301,30,2,351,30,1,401,30],
@@ -85,7 +73,7 @@ def main_game(hiscore_in):
 	           [1,1,110,2,51,110,1,101,110,2,151,110,1,201,110,2,251,110,1,301,110,2,351,110,1,401,110]]
 		
 	#################################################################################################
-	# main loop here
+	# main_game() function main loop here
 	#################################################################################################
 	while True:
 		
@@ -95,16 +83,16 @@ def main_game(hiscore_in):
 		if orient_y==1:py,y=y,y+1
 		if orient_y==-1:py,y=y,y-1
 		
-		#ball direction calculation	& GAMEOVER
+		#ball direction calculation	& gameover
 		if x>430:orient_x=-1
 		if x<20:orient_x=1
 		if y>530:
 			orient_y=-1
 			life=life-1
-			print_life(life)
+			print_score_hiscore_life(myscore, hiscore_in, life)
 			if life<=0:
 				print_gameover()
-				GAMEOVER=True
+				gameover=True
 				
 				
 		if y<20:orient_y=1
@@ -123,7 +111,7 @@ def main_game(hiscore_in):
 				orient_x=1					
 	
 		#################################################################################################
-		# BRICKS 
+		# BRICKS LOGIC
 		#################################################################################################
 		
 		if y<=130:
@@ -134,7 +122,7 @@ def main_game(hiscore_in):
 							if bricks2[tabY][tabX] != 99:
 								bricks2[tabY][tabX]=99
 								orient_y=1
-								MYSCORE=MYSCORE+1;
+								myscore=myscore+1;
 		
 		for tabY in range(0,5,1):
 			for tabX in range(0,27,3):
@@ -147,14 +135,12 @@ def main_game(hiscore_in):
 		
 		#################################################################################################			
 		
-		#ball
+		#ball display
 		pygame.draw.circle(screen, WHITE, (px,py),8,0)
 		pygame.draw.circle(screen, BLACK, (x,y),7,0)
-		time.sleep (SPEED)
-					
-		#print score and update screen			
-		print_score(MYSCORE)
-		print_life(life)
+							
+		#print score hiscore and update screen			
+		print_score_hiscore_life(myscore, hiscore_in, life)
 		pygame.display.update()
 		
 		#quit event
@@ -172,28 +158,32 @@ def main_game(hiscore_in):
 			if bar < 400:
 				pbar,bar=bar,bar+3
 		
-		if GAMEOVER==True:
-			return MYSCORE
-		
-		if MYSCORE % 45 == 0:
+		#new stage 
+		if myscore % 45 == 0:
 			bricks2 = deepcopy(bricks_refresh)
 		
+		#gameover
+		if gameover==True:
+			return myscore		
 		
-	######################################
-
-###########################################
+######################################################################################
 # MAIN
-###########################################
+# GAME STARTS HERE
+######################################################################################
 
+hiscore=0
 new_hiscore=0
 print_startgame()
 
 while True:
+	if new_hiscore > hiscore:
+		hiscore=new_hiscore
+	
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
 			pygame.quit()
 			sys.exit()
 		if event.type == pygame.KEYDOWN:
 			screen.fill(WHITE)
-			new_hiscore = main_game(new_hiscore)
-
+			new_hiscore = main_game(hiscore)
+			
