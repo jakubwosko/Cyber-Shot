@@ -1,12 +1,12 @@
 #################################################################################################
 # Cyber Shot by Jakub Wosko
-# version 1.05
+# version 1.06
 # 3/2/2015
 #
 # comment: just wanted to learn Python. it turned out to be one of the most funny things :)
 #################################################################################################
 
-import pygame, sys
+import pygame, sys, time
 from pygame.locals import *
 from copy import deepcopy
 
@@ -57,6 +57,7 @@ def main_game(hiscore_in):
 	life=3
 	gameover=False
 	myscore=0
+	SPEED=0.001
 		
 	#brics definition matrx 
 	
@@ -76,6 +77,7 @@ def main_game(hiscore_in):
 	# main_game() function main loop here
 	#################################################################################################
 	while True:
+		time.sleep (SPEED)
 		
 		#ball position calculation & movement
 		if orient_x==1:px,x=x,x+1
